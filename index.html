@@ -718,11 +718,11 @@ readTable();
 let ws = XLSX.utils.json_to_sheet(tableData);
 let wb = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(wb, ws, "Data");
-XLSX.writeFile(wb, "data sparepart.xlsx");
+XLSX.writeFile(wb, "data_sparepart.xlsx");
 showToast('File Excel berhasil diunduh');
 }
 
-// === FUNGSI PDF: TEKS BOLD TERANG & TEBAL ===
+// === FUNGSI PDF DENGAN TOTAL QTY ===
 function downloadPDF() {
 if (tableData.length === 0) {
 showToast('Tidak ada data untuk diunduh', 'error');
@@ -738,20 +738,23 @@ unit: 'mm',
 format: 'a4'
 });
 
-// === HEADER: TEKS BOLD DAN TERANG ===
-// Set warna hitam pekat (terang/kontras tinggi)
-doc.setTextColor(0, 0, 0); 
+// === HEADER ===
+doc.setTextColor(0, 0, 0);
 doc.setFontSize(18);
-doc.setFont(undefined, 'bold'); // Teks Bold
+doc.setFont(undefined, 'bold');
 doc.text("Data Sparepart Teknisi", 14, 15);
 
-// Sub-header
 doc.setFontSize(10);
-doc.setFont(undefined, 'bold'); // Tanggal juga bold
-doc.setTextColor(50, 50, 50); // Sedikit lebih terang dari hitam
-doc.text("KUPANG, Tanggal : " + new Date().toLocaleDateString('id-ID'), 14, 22);
+doc.setFont(undefined, 'bold');
+doc.setTextColor(50, 50, 50);
+doc.text("Kupang, Tanggal : " + new Date().toLocaleDateString('id-ID'), 14, 22);
 
-// Siapkan Data
+// Hitung Total Qty
+let totalQty = tableData.reduce(function(sum, row) {
+return sum + (parseInt(row["Qty"]) || 0);
+}, 0);
+
+// Siapkan Data Baris
 let rows = [];
 tableData.forEach(function(r) {
 rows.push([
@@ -765,7 +768,18 @@ r["Teknisi Perbaikan"]
 ]);
 });
 
-// === TABEL: GARIS TEBAL & FLEKSIBEL ===
+// Tambahkan baris TOTAL di akhir
+rows.push([
+"", // No
+"", // Catatan
+"TOTAL", // Part (Sebagai label)
+totalQty, // Qty (Hasil hitung)
+"", // Part Demand
+"", // Serial Number
+"" // Teknisi
+]);
+
+// === TABEL ===
 doc.autoTable({
 head: [["No", "Catatan", "Part", "Qty", "Part Demand", "Serial Number", "Teknisi Perbaikan"]],
 body: rows,
@@ -776,25 +790,47 @@ fontSize: 6,
 cellPadding: 2.5,
 overflow: 'linebreak',
 halign: 'left',
-lineColor: [0, 0, 0], // Warna garis hitam pekat
-lineWidth: 0.3 // Ketebalan garis dinaikkan (dari default 0.1)
+lineColor: [0, 0, 0],
+lineWidth: 0.3
 },
 headStyles: {
-fillColor: [240, 240, 240], // Header abu-abu terang
-textColor: [0, 0, 0], // Teks header hitam pekat
+fillColor: [240, 240, 240],
+textColor: [0, 0, 0],
 fontStyle: 'bold',
 fontSize: 7,
-lineWidth: 0.5 // Garis header lebih tebal
+lineWidth: 0.5
 },
 bodyStyles: {
-textColor: [0, 0, 0], // Teks body hitam pekat
-fontStyle: 'bold', // Teks body di-bold
+textColor: [0, 0, 0],
+fontStyle: 'bold',
 lineWidth: 0.3
 },
 alternateRowStyles: {
-fillColor: [255, 255, 255] // Baris alternate putih bersih
+fillColor: [255, 255, 255]
 },
-// Fleksibel melebar ke samping
+// Styling khusus untuk baris terakhir (TOTAL)
+didParseCell: function(data) {
+// Index baris terakhir adalah data.table.body.length - 1
+if (data.row.index === rows.length) {
+// Style untuk baris total
+data.cell.styles.fillColor = [220, 220, 220]; // Abu-abu terang
+data.cell.styles.fontStyle = 'bold';
+data.cell.styles.textColor = [0, 0, 0];
+data.cell.styles.lineWidth = 0.5;
+// Tebalkan border atas
+if (data.column.index === 0 || data.column.index === 2 || data.column.index === 3) {
+data.cell.styles.lineWidth = 0.7;
+}
+// Rata kanan untuk kolom Qty
+if (data.column.index === 3) {
+data.cell.styles.halign = 'right';
+}
+// Rata kanan untuk kolom Part (Label Total)
+if (data.column.index === 2) {
+data.cell.styles.halign = 'right';
+}
+}
+},
 tableWidth: 'auto',
 margin: { left: 10, right: 10 }
 });

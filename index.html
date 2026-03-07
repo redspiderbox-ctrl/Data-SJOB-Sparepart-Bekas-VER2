@@ -1,1 +1,681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Manajemen Sparepart Bekas</title>
 
+<!-- Link Font Awesome untuk Ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --secondary: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+}
+
+body{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0;
+    padding:20px;
+    background:var(--bg-color);
+    color: var(--text-main);
+}
+
+/* Container Utama */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header Modern */
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.header-content i {
+    font-size: 28px;
+    color: var(--primary);
+    background: #dbeafe;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.header-content h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.header-content p {
+    margin: 5px 0 0 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* Card Style */
+.card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* Tabs Modern */
+.tabs{
+    display:flex;
+    background: #f8fafc;
+    padding: 10px 15px 0 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button{
+    padding:10px 20px;
+    cursor:pointer;
+    background:transparent;
+    color: var(--text-muted);
+    margin-right:5px;
+    font-size:14px;
+    font-weight: 600;
+    border:none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover{
+    color: var(--primary);
+    background: #f1f5f9;
+}
+
+.tab-button.active{
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    background: transparent;
+}
+
+.tab-content{
+    display:none;
+    padding:20px;
+    background:var(--card-bg);
+}
+
+.tab-content.active{
+    display:block;
+}
+
+/* Table Modern */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+table{
+    border-collapse:collapse;
+    width:100%;
+    white-space:nowrap;
+    border: none;
+}
+
+th{
+    background:linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    color:var(--text-main);
+    font-size:11px;
+    font-weight:700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border-color);
+    padding:12px 10px;
+    text-align: left;
+}
+
+td{
+    font-size:12px;
+    padding:10px;
+    border-bottom: 1px solid var(--border-color);
+    color: #334155;
+}
+
+tr:hover {
+    background: #f8fafc;
+}
+
+/* Total Row Styling */
+td.total-label {
+    background: #f1f5f9;
+    font-weight: 700;
+    text-align: right;
+    border-bottom: none;
+    border-top: 2px solid var(--border-color);
+    color: var(--text-main);
+}
+
+td.total-value {
+    background: #ecfdf5;
+    font-weight: 800;
+    color: var(--success);
+    border-bottom: none;
+    border-top: 2px solid var(--border-color);
+    font-size: 14px;
+}
+
+/* Input & Buttons */
+input[type="text"], input[type="file"] {
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    padding: 6px 12px;
+    font-size: 11px;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+/* Editable Cells */
+td[contenteditable]{
+    background:#fff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+td[contenteditable]:focus {
+    background: #f0f9ff;
+    border-color: var(--primary);
+    outline: none;
+}
+
+tr.new-row td[contenteditable]{
+    background:#ecfdf5;
+    border-color: var(--success);
+}
+
+/* File Input Styling */
+.file-upload-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.file-upload-wrapper input[type=file] {
+    width: 100%;
+    cursor: pointer;
+    padding: 10px;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+}
+
+.file-upload-wrapper input[type=file]:hover {
+    border-color: var(--primary);
+    background: #f0f9ff;
+}
+
+.action-col {
+    width: 50px;
+    text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header-content">
+        <i class="fas fa-warehouse"></i>
+        <div>
+            <h3>Manajemen Data Sparepart Bekas</h3>
+            <p>Upload, kelola, dan unduh data sparepart bekas Anda secara efisien.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <div class="tab-button active" data-tab="tab1"><i class="fas fa-upload"></i> Import Data</div>
+            <div class="tab-button" data-tab="tab2"><i class="fas fa-file-export"></i> Proses & Export</div>
+        </div>
+
+        <!-- TAB 1 -->
+        <div id="tab1" class="tab-content active">
+            
+            <!-- Grup Tombol Atas -->
+            <div class="btn-group" style="margin-bottom: 10px;">
+                <button class="btn-warning" id="resetBtn"><i class="fas fa-sync-alt"></i> Reset Data</button>
+            </div>
+
+            <div class="file-upload-wrapper">
+                <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
+            </div>
+
+            <input type="text" id="search1" placeholder="&#128269; Cari nomor part, serial, teknisi...">
+
+            <div class="table-container">
+                <table id="table1">
+                    <thead>
+                        <tr>
+                            <th>Nomor</th>
+                            <th>Catatan</th>
+                            <th>Part</th>
+                            <th>Qty Transaksi</th>
+                            <th>Part Demand</th>
+                            <th>Serial Number</th>
+                            <th>Return To Factory</th>
+                            <th>Claim To Factory</th>
+                            <th>Teknisi Perbaikan</th>
+                            <th style="text-align:center">Pilih</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="total-label">TOTAL QTY</td>
+                            <td id="totalQty1" class="total-value">0</td>
+                            <td colspan="6"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2 -->
+        <div id="tab2" class="tab-content">
+            
+            <div class="btn-group">
+                <button class="btn-success" id="addRowBtn"><i class="fas fa-plus-circle"></i> Tambah Baris</button>
+                <button class="btn-primary" id="excel"><i class="fas fa-file-excel"></i> Excel</button>
+                <button class="btn-secondary" id="pdf"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+
+            <input type="text" id="search2" placeholder="&#128269; Cari data yang dipilih...">
+
+            <div class="table-container">
+                <table id="table2">
+                    <thead>
+                        <tr>
+                            <th>Nomor</th>
+                            <th>Catatan</th>
+                            <th>Part</th>
+                            <th>Qty Transaksi</th>
+                            <th>Part Demand</th>
+                            <th>Serial Number</th>
+                            <th>Teknisi Perbaikan</th>
+                            <th class="action-col">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="total-label">TOTAL QTY</td>
+                            <td id="totalQty2" class="total-value">0</td>
+                            <td colspan="4"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    const { jsPDF } = window.jspdf;
+
+    let data1 = [];
+    let data2 = [];
+
+    const fileInput = document.getElementById("fileInput");
+    const search1 = document.getElementById("search1");
+    const search2 = document.getElementById("search2");
+    const addRowBtn = document.getElementById("addRowBtn");
+    const resetBtn = document.getElementById("resetBtn"); // Tombol Reset
+
+    const table1 = document.querySelector("#table1 tbody");
+    const table2 = document.querySelector("#table2 tbody");
+
+    const totalQty1 = document.getElementById("totalQty1");
+    const totalQty2 = document.getElementById("totalQty2");
+
+    // --- LOGIKA TAB ---
+    document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById(btn.dataset.tab).classList.add("active");
+        });
+    });
+
+    // --- LOGIKA RESET DATA ---
+    resetBtn.addEventListener("click", () => {
+        // Konfirmasi sederhana (opsional)
+        if(confirm("Apakah Anda yakin ingin mereset semua data?")) {
+            data1 = [];
+            data2 = [];
+            table1.innerHTML = "";
+            table2.innerHTML = "";
+            totalQty1.innerText = "0";
+            totalQty2.innerText = "0";
+            fileInput.value = ""; // Hapus file input
+            search1.value = ""; // Hapus search
+            search2.value = "";
+        }
+    });
+
+    // --- LOGIKA UPLOAD FILE ---
+    fileInput.addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            data1 = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+            render1(data1);
+            data2 = [];
+            render2(data2);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    // --- PENCARIAN ---
+    search1.addEventListener("input", () => {
+        const keyword = search1.value.toLowerCase();
+        render1(data1.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword))));
+    });
+
+    search2.addEventListener("input", () => {
+        const keyword = search2.value.toLowerCase();
+        render2(data2.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword))));
+    });
+
+    // --- TAMBAH BARIS ---
+    addRowBtn.addEventListener("click", () => {
+        data2.push({ "Nomor": "", "Catatan": "", "Part": "", "Qty Transaksi": "", "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "", isNew: true });
+        render2(data2);
+    });
+
+    // --- RENDER TABEL 1 ---
+    function render1(arr) {
+        table1.innerHTML = "";
+        let total = 0;
+        arr.forEach((r, i) => {
+            const originalIndex = data1.indexOf(r);
+            const qty = parseFloat(r["Qty Transaksi"]) || 0;
+            total += qty;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td contenteditable>${r["Nomor"] || ""}</td>
+                <td contenteditable>${r["Catatan"] || ""}</td>
+                <td contenteditable>${r["Part"] || ""}</td>
+                <td contenteditable>${r["Qty Transaksi"] || ""}</td>
+                <td contenteditable>${r["Part Demand"] || ""}</td>
+                <td contenteditable>${r["Serial Number"] || ""}</td>
+                <td contenteditable>${r["Return To Factory"] || ""}</td>
+                <td contenteditable>${r["Claim To Factory"] || ""}</td>
+                <td contenteditable>${r["Teknisi Perbaikan"] || ""}</td>
+                <td style="text-align:center"><input type="checkbox" class="status-check" data-i="${originalIndex}"></td>
+            `;
+            table1.appendChild(tr);
+
+            tr.querySelectorAll("td[contenteditable]").forEach((td, colIndex) => {
+                td.addEventListener("blur", () => {
+                    const keys = ["Nomor", "Catatan", "Part", "Qty Transaksi", "Part Demand", "Serial Number", "Return To Factory", "Claim To Factory", "Teknisi Perbaikan"];
+                    if (data1[originalIndex]) {
+                        data1[originalIndex][keys[colIndex]] = td.innerText;
+                        if (colIndex === 3) {
+                            recalculateTotal1();
+                            updateTab2();
+                        }
+                    }
+                });
+            });
+        });
+
+        totalQty1.innerText = total.toLocaleString('id-ID');
+        table1.querySelectorAll("input[type='checkbox']").forEach(c => c.addEventListener("change", updateTab2));
+    }
+
+    function recalculateTotal1() {
+        totalQty1.innerText = data1.reduce((t, r) => t + (parseFloat(r["Qty Transaksi"]) || 0), 0).toLocaleString('id-ID');
+    }
+
+    // --- UPDATE TAB 2 ---
+    function updateTab2() {
+        data2 = [];
+        table1.querySelectorAll("input[type='checkbox']").forEach(cb => {
+            if (cb.checked) {
+                data2.push({ ...data1[parseInt(cb.dataset.i)] });
+            }
+        });
+        render2(data2);
+    }
+
+    // --- RENDER TABEL 2 ---
+    function render2(arr) {
+        table2.innerHTML = "";
+        let total = 0;
+
+        arr.forEach((r, i) => {
+            const qty = parseFloat(r["Qty Transaksi"]) || 0;
+            total += qty;
+
+            const tr = document.createElement("tr");
+            if (r.isNew) tr.classList.add("new-row");
+
+            tr.innerHTML = `
+                <td contenteditable>${r["Nomor"] || ""}</td>
+                <td contenteditable>${r["Catatan"] || ""}</td>
+                <td contenteditable>${r["Part"] || ""}</td>
+                <td contenteditable>${r["Qty Transaksi"] || ""}</td>
+                <td contenteditable>${r["Part Demand"] || ""}</td>
+                <td contenteditable>${r["Serial Number"] || ""}</td>
+                <td contenteditable>${r["Teknisi Perbaikan"] || ""}</td>
+                <td class="action-col"><button class="btn-danger" data-index="${i}"><i class="fas fa-trash-alt"></i></button></td>
+            `;
+            table2.appendChild(tr);
+
+            tr.querySelectorAll("td[contenteditable]").forEach((td, colIndex) => {
+                td.addEventListener("blur", () => {
+                    const keys = ["Nomor", "Catatan", "Part", "Qty Transaksi", "Part Demand", "Serial Number", "Teknisi Perbaikan"];
+                    if (data2[i]) data2[i][keys[colIndex]] = td.innerText;
+                    recalculateTotal2();
+                });
+            });
+        });
+
+        table2.querySelectorAll(".btn-danger").forEach(btn => {
+            btn.addEventListener("click", e => {
+                const idx = parseInt(e.currentTarget.dataset.index);
+                data2.splice(idx, 1);
+                render2(data2);
+            });
+        });
+
+        totalQty2.innerText = total.toLocaleString('id-ID');
+    }
+
+    function recalculateTotal2() {
+        totalQty2.innerText = data2.reduce((t, r) => t + (parseFloat(r["Qty Transaksi"]) || 0), 0).toLocaleString('id-ID');
+    }
+
+    // --- DOWNLOAD EXCEL ---
+    document.getElementById("excel").onclick = () => {
+        if (data2.length === 0) return alert("Tidak ada data untuk diunduh.");
+        
+        const dataToExport = data2.map(r => ({
+            "Nomor": r["Nomor"], "Catatan": r["Catatan"], "Part": r["Part"],
+            "Qty Transaksi": r["Qty Transaksi"], "Part Demand": r["Part Demand"],
+            "Serial Number": r["Serial Number"], "Teknisi Perbaikan": r["Teknisi Perbaikan"]
+        }));
+
+        const grandTotal = data2.reduce((acc, r) => acc + (parseFloat(r["Qty Transaksi"]) || 0), 0);
+        dataToExport.push({ "Nomor": "", "Catatan": "", "Part": "TOTAL", "Qty Transaksi": grandTotal, "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" });
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.writeFile(wb, "sparepart_data.xlsx");
+    };
+
+    // --- DOWNLOAD PDF ---
+    document.getElementById("pdf").onclick = () => {
+        if (data2.length === 0) return alert("Tidak ada data untuk diunduh.");
+
+        const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+        const col = ["Nomor", "Catatan", "Part", "Qty", "Demand", "Serial", "Teknisi"];
+        const rows = data2.map(r => [r["Nomor"], r["Catatan"], r["Part"], r["Qty Transaksi"], r["Part Demand"], r["Serial Number"], r["Teknisi Perbaikan"]]);
+        const grandTotal = data2.reduce((acc, r) => acc + (parseFloat(r["Qty Transaksi"]) || 0), 0);
+        rows.push(["", "", "TOTAL", grandTotal, "", "", ""]);
+
+        doc.setFontSize(18);
+        doc.setTextColor(40);
+        doc.text("Laporan Data Sparepart Bekas", 14, 20);
+        
+        doc.autoTable({
+            head: [col],
+            body: rows,
+            startY: 30,
+            margin: { left: 10, right: 10 },
+            styles: {
+                font: "helvetica",
+                fontStyle: "bold",
+                fontSize: 6,
+                lineColor: 0,
+                lineWidth: 0.5,
+                textColor: 0,
+                cellWidth: 'wrap'
+            },
+            headStyles: {
+                fillColor: [255, 255, 255],
+                textColor: 0,
+                fontStyle: "bold",
+                lineColor: 0,
+                lineWidth: 0.5,
+                halign: 'center'
+            },
+            columnStyles: {
+                0: { halign: 'center' },
+                3: { halign: 'center' }
+            },
+            didParseCell: function (data) {
+                if (data.row.index === rows.length) {
+                    data.cell.styles.fillColor = [240, 240, 240];
+                    data.cell.styles.fontStyle = "bold";
+                    if(data.column.index === 3) {
+                        data.cell.styles.halign = 'center';
+                    }
+                }
+            },
+            theme: "grid"
+        });
+
+        doc.save("sparepart_report.pdf");
+    };
+</script>
+
+</body>
+</html>

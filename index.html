@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Manajemen Sparepart</title>
+<title>Sistem Manajemen Sparepart Bekas</title>
 
 <!-- Link Font Awesome untuk Ikon -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -150,6 +150,16 @@ td{
 
 tr:hover {
     background: #f8fafc;
+}
+
+/* Style khusus No Urut yang sekarang editable */
+td.no-urut-editable {
+    font-weight: bold;
+    color: var(--primary);
+    text-align: center;
+    background: #f0f9ff; /* Sedikit biru muda */
+    width: 20px;
+    cursor: text;
 }
 
 td.total-label {
@@ -303,7 +313,6 @@ tr.new-row td[contenteditable]{
     text-align: center;
 }
 
-/* Style untuk baris yang sudah dipilih saat pencarian */
 tr.selected-row td {
     background-color: #f0f9ff;
 }
@@ -385,7 +394,7 @@ tr.selected-row td {
                 <table id="table2">
                     <thead>
                         <tr>
-                            <th>Nomor</th>
+                            <th style="text-align:center">No. Urut</th>
                             <th>Catatan</th>
                             <th>Part</th>
                             <th>Qty Transaksi</th>
@@ -417,8 +426,7 @@ tr.selected-row td {
     const { jsPDF } = window.jspdf;
 
     let data1 = [];
-    // Menggunakan Set untuk menyimpan indeks yang dicentang (lebih efisien)
-    let selectedIndexes = new Set(); 
+    let selectedIndexes = new Set();
     let data2 = [];
 
     const fileInput = document.getElementById("fileInput");
@@ -448,7 +456,7 @@ tr.selected-row td {
         if(confirm("Apakah Anda yakin ingin mereset semua data?")) {
             data1 = [];
             data2 = [];
-            selectedIndexes.clear(); // Hapus semua pilihan
+            selectedIndexes.clear();
             table1.innerHTML = "";
             table2.innerHTML = "";
             totalQty1.innerText = "0";
@@ -470,10 +478,8 @@ tr.selected-row td {
             const workbook = XLSX.read(data, { type: "array" });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             data1 = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-            selectedIndexes.clear(); // Reset pilihan saat upload baru
+            selectedIndexes.clear();
             render1(data1);
-            data2 = [];
-            render2(data2);
         };
         reader.readAsArrayBuffer(file);
     });
@@ -482,7 +488,7 @@ tr.selected-row td {
     search1.addEventListener("input", () => {
         const keyword = search1.value.toLowerCase();
         const filtered = data1.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword)));
-        render1(filtered); // Render hasil filter, status cek tetap dipertahankan oleh logika render
+        render1(filtered);
     });
 
     // --- PENCARIAN TAB 2 ---
@@ -492,32 +498,29 @@ tr.selected-row td {
         render2(filtered);
     });
 
-    // --- TAMBAH BARIS ---
+    // --- TAMBAH BARIS (TAB 2) ---
     addRowBtn.addEventListener("click", () => {
-        data2.push({ "Nomor": "", "Catatan": "", "Part": "", "Qty Transaksi": "", "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "", isNew: true });
+        data2.push({ 
+            "No_Urut": data2.length + 1, // Default nomor urut
+            "Catatan": "", "Part": "", 
+            "Qty Transaksi": "", "Part Demand": "", 
+            "Serial Number": "", "Teknisi Perbaikan": "", 
+            isNew: true 
+        });
         render2(data2);
     });
 
-    // --- RENDER TABEL 1 (Dengan Penanda Pilihan) ---
+    // --- RENDER TABEL 1 ---
     function render1(arr) {
         table1.innerHTML = "";
         let total = 0;
         
-        // Hitung total berdasarkan data yang TAMPIL (arr)
-        // Jika ingin total keseluruhan data (bukan hasil search), gunakan data1 loop terpisah
-        // Di sini kita hitung total yang tampil saja agar tidak membingungkan saat search
-        
         arr.forEach((r, i) => {
-            // Gunakan referensi objek untuk mencari index asli di data1
-            // Cara ini lebih aman dari indexOf jika ada duplikat data
             const originalIndex = data1.indexOf(r); 
-            
             const qty = parseFloat(r["Qty Transaksi"]) || 0;
             total += qty;
 
             const tr = document.createElement("tr");
-            
-            // Cek apakah index ini ada di daftar selectedIndexes
             const isChecked = selectedIndexes.has(originalIndex);
             if (isChecked) tr.classList.add("selected-row");
 
@@ -537,17 +540,12 @@ tr.selected-row td {
             `;
             table1.appendChild(tr);
 
-            // Event listener untuk Edit
             tr.querySelectorAll("td[contenteditable]").forEach((td, colIndex) => {
                 td.addEventListener("blur", () => {
                     const keys = ["Nomor", "Catatan", "Part", "Qty Transaksi", "Part Demand", "Serial Number", "Return To Factory", "Claim To Factory", "Teknisi Perbaikan"];
                     if (data1[originalIndex]) {
                         data1[originalIndex][keys[colIndex]] = td.innerText;
-                        
-                        // Jika qty berubah, update total
-                        recalculateTotal1(); // Hitung ulang total 1
-                        
-                        // Update juga data di Tab 2 jika baris ini sedang dicentang
+                        recalculateTotal1();
                         if (selectedIndexes.has(originalIndex)) {
                             updateTab2Data();
                         }
@@ -556,13 +554,8 @@ tr.selected-row td {
             });
         });
 
-        // Hitung total qty dari semua data (bukan hanya hasil search) untuk footer
-        // Agar konsisten, kita biarkan total di footer sesuai hasil filter saja, 
-        // atau jika ingin total absolute, buat fungsi terpisah.
-        // Kali ini kita pakai total hasil filter agar UX lebih baik.
         totalQty1.innerText = total.toLocaleString('id-ID');
 
-        // Event listener untuk Checkbox
         table1.querySelectorAll("input[type='checkbox']").forEach(c => {
             c.addEventListener("change", (e) => {
                 const idx = parseInt(e.target.dataset.i);
@@ -573,32 +566,31 @@ tr.selected-row td {
                     selectedIndexes.delete(idx);
                     e.target.closest("tr").classList.remove("selected-row");
                 }
-                updateTab2Data(); // Update Tab 2 otomatis saat centang berubah
+                updateTab2Data();
             });
         });
     }
 
     function recalculateTotal1() {
-        // Total di Tab 1 biasanya menampilkan total dari data yang tampil.
-        // Jika ingin total ABSOLUTE (semua data) meskipun sedang search, logikanya beda.
-        // Di sini kita biarkan sederhana: total = total baris yang render.
-        // Tapi untuk UX, saat search lebih baik total menunjukkan yg tampil.
-        // Jadi fungsi ini tidak terlalu krusial kecuali untuk edit langsung.
+        const total = data1.reduce((t, r) => t + (parseFloat(r["Qty Transaksi"]) || 0), 0);
+        totalQty1.innerText = total.toLocaleString('id-ID');
     }
 
-    // --- LOGIKA UPDATE TAB 2 ---
+    // --- LOGIKA SINKRONISASI TAB 1 KE TAB 2 ---
     function updateTab2Data() {
-        data2 = [];
-        // Loop semua index yang ada di selectedIndexes
+        const existingManualData = data2.filter(r => r.isNew);
+        const selectedData = [];
         selectedIndexes.forEach(idx => {
             if (data1[idx]) {
-                data2.push({ ...data1[idx] });
+                let row = { ...data1[idx], sourceIndex: idx, isNew: false };
+                selectedData.push(row);
             }
         });
+        data2 = [...selectedData, ...existingManualData];
         render2(data2);
     }
 
-    // --- RENDER TABEL 2 ---
+    // --- RENDER TABEL 2 (SEMUA EDITABLE) ---
     function render2(arr) {
         table2.innerHTML = "";
         let total = 0;
@@ -610,8 +602,9 @@ tr.selected-row td {
             const tr = document.createElement("tr");
             if (r.isNew) tr.classList.add("new-row");
 
+            // No Urut sekarang memiliki contenteditable
             tr.innerHTML = `
-                <td contenteditable>${r["Nomor"] || ""}</td>
+                <td contenteditable class="no-urut-editable">${r["No_Urut"] || (i+1)}</td>
                 <td contenteditable>${r["Catatan"] || ""}</td>
                 <td contenteditable>${r["Part"] || ""}</td>
                 <td contenteditable>${r["Qty Transaksi"] || ""}</td>
@@ -622,52 +615,39 @@ tr.selected-row td {
             `;
             table2.appendChild(tr);
 
+            // Logika Edit untuk Semua Kolom
             tr.querySelectorAll("td[contenteditable]").forEach((td, colIndex) => {
                 td.addEventListener("blur", () => {
-                    const keys = ["Nomor", "Catatan", "Part", "Qty Transaksi", "Part Demand", "Serial Number", "Teknisi Perbaikan"];
-                    if (data2[i]) data2[i][keys[colIndex]] = td.innerText;
-                    recalculateTotal2();
+                    // Keys disesuaikan: 0=No_Urut, 1=Catatan, dst...
+                    const keys = ["No_Urut", "Catatan", "Part", "Qty Transaksi", "Part Demand", "Serial Number", "Teknisi Perbaikan"];
+                    
+                    if(data2[i]) {
+                         data2[i][keys[colIndex]] = td.innerText;
+                    }
+                    
+                    // Jika yang berubah adalah Qty, hitung ulang total
+                    if (colIndex === 3) { // Index 3 adalah Qty Transaksi
+                         recalculateTotal2();
+                    }
                 });
             });
         });
 
+        // Logika Hapus
         table2.querySelectorAll(".btn-danger").forEach(btn => {
             btn.addEventListener("click", e => {
                 const idx = parseInt(e.currentTarget.dataset.index);
                 
-                // Jika hapus di Tab 2, kita perlu hapus juga centangan di Tab 1
-                // Tapi karena data2 adalah copy-an (spread operator), kita kehilangan referensi index asli.
-                // Solusi: Cari nomor serial/part yang cocok untuk hapus centang, atau biarkan independen.
-                // Disini kita buat independen saja (Hapus di Tab 2 tidak mengubah centang Tab 1), 
-                // atau kita bisa tambahkan logic kompleks pencarian index.
-                // Untuk simple, hapus data2 saja.
-                
-                // Solusi Lebih Baik: Simpan index asli di object data2.
-                // Saat ini data2 = [...data1[idx]].
-                // Mari kita simpan index asli saat push.
-                
-                // MODIFIKASI: Saya akan update logika push di updateTab2Data
-                // Untuk sementara, hapus biasa dulu.
+                if (data2[idx] && data2[idx].sourceIndex !== undefined) {
+                    selectedIndexes.delete(data2[idx].sourceIndex);
+                }
+
                 data2.splice(idx, 1);
-                render2(data2);
+                render2(data2); 
             });
         });
 
         totalQty2.innerText = total.toLocaleString('id-ID');
-    }
-    
-    // Modifikasi Update Tab 2 agar menyimpan referensi index
-    const originalUpdateTab2Data = updateTab2Data;
-    updateTab2Data = function() {
-        data2 = [];
-        selectedIndexes.forEach(idx => {
-            if (data1[idx]) {
-                // Buat copy data dan simpan referensi index asli
-                let row = { ...data1[idx], originalIndex: idx }; 
-                data2.push(row);
-            }
-        });
-        render2(data2);
     }
 
     function recalculateTotal2() {
@@ -678,14 +658,18 @@ tr.selected-row td {
     document.getElementById("excel").onclick = () => {
         if (data2.length === 0) return alert("Tidak ada data untuk diunduh.");
         
-        const dataToExport = data2.map(r => ({
-            "Nomor": r["Nomor"], "Catatan": r["Catatan"], "Part": r["Part"],
-            "Qty Transaksi": r["Qty Transaksi"], "Part Demand": r["Part Demand"],
-            "Serial Number": r["Serial Number"], "Teknisi Perbaikan": r["Teknisi Perbaikan"]
+        const dataToExport = data2.map((r, i) => ({
+            "No": r["No_Urut"] || (i+1), // Ambil dari data yang mungkin sudah diedit
+            "Catatan": r["Catatan"], 
+            "Part": r["Part"],
+            "Qty Transaksi": r["Qty Transaksi"], 
+            "Part Demand": r["Part Demand"],
+            "Serial Number": r["Serial Number"], 
+            "Teknisi Perbaikan": r["Teknisi Perbaikan"]
         }));
 
         const grandTotal = data2.reduce((acc, r) => acc + (parseFloat(r["Qty Transaksi"]) || 0), 0);
-        dataToExport.push({ "Nomor": "", "Catatan": "", "Part": "TOTAL", "Qty Transaksi": grandTotal, "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" });
+        dataToExport.push({ "No": "", "Catatan": "", "Part": "TOTAL", "Qty Transaksi": grandTotal, "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" });
 
         const ws = XLSX.utils.json_to_sheet(dataToExport);
         const wb = XLSX.utils.book_new();
@@ -698,8 +682,13 @@ tr.selected-row td {
         if (data2.length === 0) return alert("Tidak ada data untuk diunduh.");
 
         const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
-        const col = ["Nomor", "Catatan", "Part", "Qty", "Demand", "Serial", "Teknisi"];
-        const rows = data2.map(r => [r["Nomor"], r["Catatan"], r["Part"], r["Qty Transaksi"], r["Part Demand"], r["Serial Number"], r["Teknisi Perbaikan"]]);
+        const col = ["No", "Catatan", "Part", "Qty", "Demand", "Serial", "Teknisi"];
+        
+        const rows = data2.map((r, i) => [
+            r["No_Urut"] || (i+1), // Ambil dari data yang diedit
+            r["Catatan"], r["Part"], r["Qty Transaksi"], r["Part Demand"], r["Serial Number"], r["Teknisi Perbaikan"]
+        ]);
+        
         const grandTotal = data2.reduce((acc, r) => acc + (parseFloat(r["Qty Transaksi"]) || 0), 0);
         rows.push(["", "", "TOTAL", grandTotal, "", "", ""]);
 

@@ -120,6 +120,7 @@ body{
     overflow-x: auto;
     border-radius: 8px;
     border: 1px solid var(--border-color);
+    margin-bottom: 20px;
 }
 
 table{
@@ -152,12 +153,11 @@ tr:hover {
     background: #f8fafc;
 }
 
-/* Style khusus No Urut yang sekarang editable */
 td.no-urut-editable {
     font-weight: bold;
     color: var(--primary);
     text-align: center;
-    background: #f0f9ff; /* Sedikit biru muda */
+    background: #f0f9ff;
     width: 20px;
     cursor: text;
 }
@@ -178,6 +178,46 @@ td.total-value {
     border-bottom: none;
     border-top: 2px solid var(--border-color);
     font-size: 14px;
+}
+
+/* Style untuk Area Keterangan Manual */
+.manual-notes-section {
+    margin-top: 20px;
+    border-top: 2px dashed var(--border-color);
+    padding-top: 15px;
+}
+
+.notes-title {
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.note-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.note-label {
+    width: 120px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.note-input {
+    flex-grow: 1;
+    border-bottom: 1px solid var(--border-color);
+    padding: 5px 0;
+    font-size: 12px;
+    outline: none;
+    background: transparent;
+}
+
+.note-input:focus {
+    border-bottom-color: var(--primary);
 }
 
 input[type="text"], input[type="file"] {
@@ -217,56 +257,16 @@ button {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.btn-primary {
-    background: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.btn-success {
-    background: var(--success);
-    color: white;
-}
-
-.btn-success:hover {
-    background: #059669;
-    transform: translateY(-1px);
-}
-
-.btn-danger {
-    background: var(--danger);
-    color: white;
-    padding: 6px 12px;
-    font-size: 11px;
-}
-
-.btn-danger:hover {
-    background: #dc2626;
-}
-
-.btn-warning {
-    background: var(--warning);
-    color: white;
-}
-
-.btn-warning:hover {
-    background: #d97706;
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background: #e2e8f0;
-    color: #475569;
-}
-
-.btn-secondary:hover {
-    background: #cbd5e1;
-}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: #059669; transform: translateY(-1px); }
+.btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 11px; }
+.btn-danger:hover { background: #dc2626; }
+.btn-warning { background: var(--warning); color: white; }
+.btn-warning:hover { background: #d97706; transform: translateY(-1px); }
+.btn-secondary { background: #e2e8f0; color: #475569; }
+.btn-secondary:hover { background: #cbd5e1; }
 
 td[contenteditable]{
     background:#fff;
@@ -281,10 +281,7 @@ td[contenteditable]:focus {
     outline: none;
 }
 
-tr.new-row td[contenteditable]{
-    background:#ecfdf5;
-    border-color: var(--success);
-}
+tr.new-row td[contenteditable]{ background:#ecfdf5; border-color: var(--success); }
 
 .file-upload-wrapper {
     position: relative;
@@ -303,19 +300,10 @@ tr.new-row td[contenteditable]{
     border-radius: 8px;
 }
 
-.file-upload-wrapper input[type=file]:hover {
-    border-color: var(--primary);
-    background: #f0f9ff;
-}
+.file-upload-wrapper input[type=file]:hover { border-color: var(--primary); background: #f0f9ff; }
 
-.action-col {
-    width: 50px;
-    text-align: center;
-}
-
-tr.selected-row td {
-    background-color: #f0f9ff;
-}
+.action-col { width: 50px; text-align: center; }
+tr.selected-row td { background-color: #f0f9ff; }
 
 </style>
 </head>
@@ -340,30 +328,20 @@ tr.selected-row td {
 
         <!-- TAB 1 -->
         <div id="tab1" class="tab-content active">
-            
             <div class="btn-group" style="margin-bottom: 10px;">
                 <button class="btn-warning" id="resetBtn"><i class="fas fa-sync-alt"></i> Reset Data</button>
             </div>
-
             <div class="file-upload-wrapper">
                 <input type="file" id="fileInput" accept=".xlsx, .xls, .csv">
             </div>
-
             <input type="text" id="search1" placeholder="&#128269; Cari nomor part, serial, teknisi...">
-
             <div class="table-container">
                 <table id="table1">
                     <thead>
                         <tr>
-                            <th>Nomor</th>
-                            <th>Catatan</th>
-                            <th>Part</th>
-                            <th>Qty Transaksi</th>
-                            <th>Part Demand</th>
-                            <th>Serial Number</th>
-                            <th>Return To Factory</th>
-                            <th>Claim To Factory</th>
-                            <th>Teknisi Perbaikan</th>
+                            <th>Nomor</th><th>Catatan</th><th>Part</th><th>Qty Transaksi</th>
+                            <th>Part Demand</th><th>Serial Number</th><th>Return To Factory</th>
+                            <th>Claim To Factory</th><th>Teknisi Perbaikan</th>
                             <th style="text-align:center">Pilih</th>
                         </tr>
                     </thead>
@@ -395,12 +373,8 @@ tr.selected-row td {
                     <thead>
                         <tr>
                             <th style="text-align:center">No. Urut</th>
-                            <th>Catatan</th>
-                            <th>Part</th>
-                            <th>Qty Transaksi</th>
-                            <th>Part Demand</th>
-                            <th>Serial Number</th>
-                            <th>Teknisi Perbaikan</th>
+                            <th>Catatan</th><th>Part</th><th>Qty Transaksi</th>
+                            <th>Part Demand</th><th>Serial Number</th><th>Teknisi Perbaikan</th>
                             <th class="action-col">Aksi</th>
                         </tr>
                     </thead>
@@ -414,6 +388,26 @@ tr.selected-row td {
                     </tfoot>
                 </table>
             </div>
+
+            <!-- AREA KETERANGAN MANUAL (BARU) -->
+            <div class="manual-notes-section">
+                <div class="notes-title"><i class="fas fa-pen"></i> Keterangan Tambahan (Manual) :</div>
+                <div id="manualNotesContainer">
+                    <div class="note-row">
+                        <div class="note-label">1.</div>
+                        <div class="note-input" contenteditable="true"></div>
+                    </div>
+                    <div class="note-row">
+                        <div class="note-label">2.</div>
+                        <div class="note-input" contenteditable="true"></div>
+                    </div>
+                    <div class="note-row">
+                        <div class="note-label">3.</div>
+                        <div class="note-input" contenteditable="true"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -454,16 +448,12 @@ tr.selected-row td {
     // --- LOGIKA RESET DATA ---
     resetBtn.addEventListener("click", () => {
         if(confirm("Apakah Anda yakin ingin mereset semua data?")) {
-            data1 = [];
-            data2 = [];
-            selectedIndexes.clear();
-            table1.innerHTML = "";
-            table2.innerHTML = "";
-            totalQty1.innerText = "0";
-            totalQty2.innerText = "0";
-            fileInput.value = "";
-            search1.value = "";
-            search2.value = "";
+            data1 = []; data2 = []; selectedIndexes.clear();
+            table1.innerHTML = ""; table2.innerHTML = "";
+            totalQty1.innerText = "0"; totalQty2.innerText = "0";
+            fileInput.value = ""; search1.value = ""; search2.value = "";
+            // Reset juga manual notes
+            document.querySelectorAll('.note-input').forEach(el => el.innerText = "");
         }
     });
 
@@ -471,7 +461,6 @@ tr.selected-row td {
     fileInput.addEventListener("change", e => {
         const file = e.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = e => {
             const data = new Uint8Array(e.target.result);
@@ -487,22 +476,19 @@ tr.selected-row td {
     // --- PENCARIAN TAB 1 ---
     search1.addEventListener("input", () => {
         const keyword = search1.value.toLowerCase();
-        const filtered = data1.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword)));
-        render1(filtered);
+        render1(data1.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword))));
     });
 
     // --- PENCARIAN TAB 2 ---
     search2.addEventListener("input", () => {
         const keyword = search2.value.toLowerCase();
-        const filtered = data2.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword)));
-        render2(filtered);
+        render2(data2.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(keyword))));
     });
 
     // --- TAMBAH BARIS (TAB 2) ---
     addRowBtn.addEventListener("click", () => {
         data2.push({ 
-            "No_Urut": data2.length + 1, // Default nomor urut
-            "Catatan": "", "Part": "", 
+            "No_Urut": data2.length + 1, "Catatan": "", "Part": "", 
             "Qty Transaksi": "", "Part Demand": "", 
             "Serial Number": "", "Teknisi Perbaikan": "", 
             isNew: true 
@@ -546,34 +532,25 @@ tr.selected-row td {
                     if (data1[originalIndex]) {
                         data1[originalIndex][keys[colIndex]] = td.innerText;
                         recalculateTotal1();
-                        if (selectedIndexes.has(originalIndex)) {
-                            updateTab2Data();
-                        }
+                        if (selectedIndexes.has(originalIndex)) updateTab2Data();
                     }
                 });
             });
         });
-
         totalQty1.innerText = total.toLocaleString('id-ID');
 
         table1.querySelectorAll("input[type='checkbox']").forEach(c => {
             c.addEventListener("change", (e) => {
                 const idx = parseInt(e.target.dataset.i);
-                if (e.target.checked) {
-                    selectedIndexes.add(idx);
-                    e.target.closest("tr").classList.add("selected-row");
-                } else {
-                    selectedIndexes.delete(idx);
-                    e.target.closest("tr").classList.remove("selected-row");
-                }
+                if (e.target.checked) { selectedIndexes.add(idx); e.target.closest("tr").classList.add("selected-row"); }
+                else { selectedIndexes.delete(idx); e.target.closest("tr").classList.remove("selected-row"); }
                 updateTab2Data();
             });
         });
     }
 
     function recalculateTotal1() {
-        const total = data1.reduce((t, r) => t + (parseFloat(r["Qty Transaksi"]) || 0), 0);
-        totalQty1.innerText = total.toLocaleString('id-ID');
+        totalQty1.innerText = data1.reduce((t, r) => t + (parseFloat(r["Qty Transaksi"]) || 0), 0).toLocaleString('id-ID');
     }
 
     // --- LOGIKA SINKRONISASI TAB 1 KE TAB 2 ---
@@ -581,10 +558,7 @@ tr.selected-row td {
         const existingManualData = data2.filter(r => r.isNew);
         const selectedData = [];
         selectedIndexes.forEach(idx => {
-            if (data1[idx]) {
-                let row = { ...data1[idx], sourceIndex: idx, isNew: false };
-                selectedData.push(row);
-            }
+            if (data1[idx]) selectedData.push({ ...data1[idx], sourceIndex: idx, isNew: false });
         });
         data2 = [...selectedData, ...existingManualData];
         render2(data2);
@@ -598,11 +572,9 @@ tr.selected-row td {
         arr.forEach((r, i) => {
             const qty = parseFloat(r["Qty Transaksi"]) || 0;
             total += qty;
-
             const tr = document.createElement("tr");
             if (r.isNew) tr.classList.add("new-row");
 
-            // No Urut sekarang memiliki contenteditable
             tr.innerHTML = `
                 <td contenteditable class="no-urut-editable">${r["No_Urut"] || (i+1)}</td>
                 <td contenteditable>${r["Catatan"] || ""}</td>
@@ -615,38 +587,23 @@ tr.selected-row td {
             `;
             table2.appendChild(tr);
 
-            // Logika Edit untuk Semua Kolom
             tr.querySelectorAll("td[contenteditable]").forEach((td, colIndex) => {
                 td.addEventListener("blur", () => {
-                    // Keys disesuaikan: 0=No_Urut, 1=Catatan, dst...
                     const keys = ["No_Urut", "Catatan", "Part", "Qty Transaksi", "Part Demand", "Serial Number", "Teknisi Perbaikan"];
-                    
-                    if(data2[i]) {
-                         data2[i][keys[colIndex]] = td.innerText;
-                    }
-                    
-                    // Jika yang berubah adalah Qty, hitung ulang total
-                    if (colIndex === 3) { // Index 3 adalah Qty Transaksi
-                         recalculateTotal2();
-                    }
+                    if(data2[i]) data2[i][keys[colIndex]] = td.innerText;
+                    if (colIndex === 3) recalculateTotal2();
                 });
             });
         });
 
-        // Logika Hapus
         table2.querySelectorAll(".btn-danger").forEach(btn => {
             btn.addEventListener("click", e => {
                 const idx = parseInt(e.currentTarget.dataset.index);
-                
-                if (data2[idx] && data2[idx].sourceIndex !== undefined) {
-                    selectedIndexes.delete(data2[idx].sourceIndex);
-                }
-
+                if (data2[idx] && data2[idx].sourceIndex !== undefined) selectedIndexes.delete(data2[idx].sourceIndex);
                 data2.splice(idx, 1);
                 render2(data2); 
             });
         });
-
         totalQty2.innerText = total.toLocaleString('id-ID');
     }
 
@@ -659,17 +616,25 @@ tr.selected-row td {
         if (data2.length === 0) return alert("Tidak ada data untuk diunduh.");
         
         const dataToExport = data2.map((r, i) => ({
-            "No": r["No_Urut"] || (i+1), // Ambil dari data yang mungkin sudah diedit
-            "Catatan": r["Catatan"], 
-            "Part": r["Part"],
-            "Qty Transaksi": r["Qty Transaksi"], 
-            "Part Demand": r["Part Demand"],
-            "Serial Number": r["Serial Number"], 
-            "Teknisi Perbaikan": r["Teknisi Perbaikan"]
+            "No": r["No_Urut"] || (i+1), "Catatan": r["Catatan"], "Part": r["Part"],
+            "Qty Transaksi": r["Qty Transaksi"], "Part Demand": r["Part Demand"],
+            "Serial Number": r["Serial Number"], "Teknisi Perbaikan": r["Teknisi Perbaikan"]
         }));
 
         const grandTotal = data2.reduce((acc, r) => acc + (parseFloat(r["Qty Transaksi"]) || 0), 0);
         dataToExport.push({ "No": "", "Catatan": "", "Part": "TOTAL", "Qty Transaksi": grandTotal, "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" });
+
+        // Tambahkan keterangan manual ke Excel
+        const notes = document.querySelectorAll('.note-input');
+        let emptyRow = { "No": "", "Catatan": "", "Part": "", "Qty Transaksi": "", "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" };
+        dataToExport.push(emptyRow);
+        dataToExport.push({ "No": "Keterangan:", "Catatan": "", "Part": "", "Qty Transaksi": "", "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" });
+        
+        notes.forEach((note, index) => {
+            if(note.innerText.trim() !== "") {
+                dataToExport.push({ "No": `${index+1}.`, "Catatan": note.innerText, "Part": "", "Qty Transaksi": "", "Part Demand": "", "Serial Number": "", "Teknisi Perbaikan": "" });
+            }
+        });
 
         const ws = XLSX.utils.json_to_sheet(dataToExport);
         const wb = XLSX.utils.book_new();
@@ -685,7 +650,7 @@ tr.selected-row td {
         const col = ["No", "Catatan", "Part", "Qty", "Demand", "Serial", "Teknisi"];
         
         const rows = data2.map((r, i) => [
-            r["No_Urut"] || (i+1), // Ambil dari data yang diedit
+            r["No_Urut"] || (i+1),
             r["Catatan"], r["Part"], r["Qty Transaksi"], r["Part Demand"], r["Serial Number"], r["Teknisi Perbaikan"]
         ]);
         
@@ -701,38 +666,41 @@ tr.selected-row td {
             body: rows,
             startY: 30,
             margin: { left: 10, right: 10 },
-            styles: {
-                font: "helvetica",
-                fontStyle: "bold",
-                fontSize: 6,
-                lineColor: 0,
-                lineWidth: 0.5,
-                textColor: 0,
-                cellWidth: 'wrap'
-            },
-            headStyles: {
-                fillColor: [255, 255, 255],
-                textColor: 0,
-                fontStyle: "bold",
-                lineColor: 0,
-                lineWidth: 0.5,
-                halign: 'center'
-            },
-            columnStyles: {
-                0: { halign: 'center' },
-                3: { halign: 'center' }
-            },
+            styles: { font: "helvetica", fontStyle: "bold", fontSize: 6, lineColor: 0, lineWidth: 0.5, textColor: 0, cellWidth: 'wrap' },
+            headStyles: { fillColor: [255, 255, 255], textColor: 0, fontStyle: "bold", lineColor: 0, lineWidth: 0.5, halign: 'center' },
+            columnStyles: { 0: { halign: 'center' }, 3: { halign: 'center' } },
             didParseCell: function (data) {
                 if (data.row.index === rows.length) {
                     data.cell.styles.fillColor = [240, 240, 240];
                     data.cell.styles.fontStyle = "bold";
-                    if(data.column.index === 3) {
-                        data.cell.styles.halign = 'center';
-                    }
+                    if(data.column.index === 3) data.cell.styles.halign = 'center';
                 }
             },
             theme: "grid"
         });
+
+        // TAMBAHKAN KETERANGAN MANUAL KE PDF
+        const notes = document.querySelectorAll('.note-input');
+        let hasNotes = false;
+        let notesContent = [];
+        notes.forEach((note, index) => {
+            if(note.innerText.trim() !== "") {
+                hasNotes = true;
+                notesContent.push(`${index + 1}. ${note.innerText}`);
+            }
+        });
+
+        if (hasNotes) {
+            let finalY = doc.lastAutoTable.finalY + 10; // Posisi setelah tabel utama
+            doc.setFontSize(10);
+            doc.text("Keterangan Tambahan:", 14, finalY);
+            
+            doc.setFontSize(8); // Ukuran font lebih kecil untuk keterangan
+            notesContent.forEach((text, idx) => {
+                finalY += 5; // Spasi antar baris keterangan
+                doc.text(text, 14, finalY);
+            });
+        }
 
         doc.save("sparepart_report.pdf");
     };

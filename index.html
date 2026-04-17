@@ -46,8 +46,12 @@ input[type="text"] { width: 100%; padding: 10px 14px 10px 38px; margin-bottom: 1
 select { padding: 10px 14px; margin-bottom: 16px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; font-weight: 500; }
 input[type="text"]:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 input[type="text"]::placeholder { color: var(--border-light); }
-.filter-row { display: flex; gap: 12px; margin-bottom: 16px; }
-.filter-row > * { flex: 1; min-width: 0; }
+/* Perubahan CSS: Grid filter lebih adaptif */
+.filter-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+@media (max-width: 900px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .filter-grid { grid-template-columns: 1fr; } }
+.filter-grid > * { margin-bottom: 0 !important; min-width: 0; }
+
 .file-upload-wrapper { position: relative; margin-bottom: 16px; }
 .file-upload-wrapper input[type="file"] { display: block; width: 100%; padding: 22px 16px; font-size: 13px; font-family: inherit; cursor: pointer; background: var(--hover-bg); border: 2px dashed var(--border-light); border-radius: 10px; transition: border-color 0.2s, background 0.2s; color: var(--text-muted); }
 .file-upload-wrapper input[type="file"]::file-selector-button { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-weight: 600; font-size: 12px; cursor: pointer; margin-right: 14px; transition: background 0.15s, border-color 0.15s; font-family: inherit; }
@@ -92,7 +96,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
 .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
 .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: 0.3; display: block; }
 .empty-state p { font-size: 13px; margin: 0; }
-@media (max-width: 768px) { body { padding: 12px; } .header-content { gap: 12px; } .header-icon { width: 48px; height: 48px; font-size: 22px; } .header-text h3 { font-size: 18px; } .tab-content { padding: 14px; } .tab-button { padding: 9px 14px; font-size: 12px; gap: 6px; } .btn-group { gap: 6px; } button { padding: 8px 12px; font-size: 12px; } .btn-group-info { display: none; } .toast-container { left: 12px; right: 12px; bottom: 12px; } .toast { max-width: 100%; } .filter-row { flex-direction: column; } }
+@media (max-width: 768px) { body { padding: 12px; } .header-content { gap: 12px; } .header-icon { width: 48px; height: 48px; font-size: 22px; } .header-text h3 { font-size: 18px; } .tab-content { padding: 14px; } .tab-button { padding: 9px 14px; font-size: 12px; gap: 6px; } .btn-group { gap: 6px; } button { padding: 8px 12px; font-size: 12px; } .btn-group-info { display: none; } .toast-container { left: 12px; right: 12px; bottom: 12px; } .toast { max-width: 100%; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 </style>
 </head>
@@ -125,13 +129,37 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                 <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" aria-label="Upload file Excel atau CSV">
             </div>
             
-            <!-- AREA FILTER GANDA -->
-            <div class="filter-row">
-                <input type="text" id="search1" placeholder="Cari nomor part, serial, catatan...">
-                <label for="filterTeknisi" class="sr-only">Filter berdasarkan Teknisi</label>
-                <select id="filterTeknisi">
-                    <option value="">Semua Teknisi Perbaikan</option>
-                </select>
+            <!-- AREA FILTER GANDA (UPDATED) -->
+            <div class="filter-grid">
+                <div style="position:relative;">
+                    <label for="search1" class="sr-only">Cari Umum</label>
+                    <input type="text" id="search1" placeholder="Cari umum (Part, Serial, Catatan...)" style="margin-bottom:0;">
+                </div>
+                
+                <div>
+                    <label for="filterTeknisi" class="sr-only">Filter Teknisi</label>
+                    <select id="filterTeknisi" style="margin-bottom:0; width:100%;">
+                        <option value="">Semua Teknisi</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="filterReturn" class="sr-only">Filter Return</label>
+                    <select id="filterReturn" style="margin-bottom:0; width:100%;">
+                        <option value="">Semua Status Return</option>
+                        <option value="yes">Return: YES</option>
+                        <option value="no">Return: NO</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="filterClaim" class="sr-only">Filter Claim</label>
+                    <select id="filterClaim" style="margin-bottom:0; width:100%;">
+                        <option value="">Semua Status Claim</option>
+                        <option value="yes">Claim: YES</option>
+                        <option value="no">Claim: NO</option>
+                    </select>
+                </div>
             </div>
 
             <div class="table-container">
@@ -199,13 +227,24 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
 
     // ========== STATE ==========
     let data1 = [], selectedIndexes = new Set(), data2 = [], data3 = [];
-    let currentFilter1 = "", currentFilter2 = "", currentFilter3 = "", filterTeknisiVal = "";
+    let currentFilter1 = "", currentFilter2 = "", currentFilter3 = "";
+    
+    // Variabel untuk nilai filter
+    let filterTeknisiVal = "";
+    let filterReturnVal = ""; // "yes", "no", atau ""
+    let filterClaimVal = "";  // "yes", "no", atau ""
+    
     let idxMapTab1 = new Map(), idxMapTab2 = new Map(), idxMapTab3 = new Map(); 
 
     // ========== DOM ==========
     const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
     const fileInput = $("#fileInput"), search1 = $("#search1"), search2 = $("#search2"), search3 = $("#search3");
-    const filterTeknisi = $("#filterTeknisi"); // DOM Dropdown Filter Teknisi
+    
+    // DOM Dropdown Filter
+    const filterTeknisi = $("#filterTeknisi");
+    const filterReturn = $("#filterReturn");
+    const filterClaim = $("#filterClaim");
+    
     const addRowBtn = $("#addRowBtn"), addRowBtn3 = $("#addRowBtn3"), resetBtn = $("#resetBtn"), checkAllCb = $("#checkAll");
     const tbody1 = $("#tbody1"), tbody2 = $("#tbody2"), tbody3 = $("#tbody3");
     const totalQty1El = $("#totalQty1"), totalQty2El = $("#totalQty2"), totalQty3aEl = $("#totalQty3a");
@@ -220,6 +259,15 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
     function esc(s) { return typeof s!=="string"?s:s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
     function calcTotal(a, k) { var s=0; for(var i=0;i<a.length;i++) s+=parseFloat(a[i][k])||0; return s; }
     function debounce(fn, d) { var t; return function(){ clearTimeout(t); t=setTimeout(fn, d); }; }
+
+    // Helper cek Yes/No (tidak case sensitive)
+    function checkYesNo(val, target) {
+        if (!target) return true; // Jika filter tidak aktif, lolos saja
+        var v = String(val).toLowerCase().trim();
+        // Menganggap "yes", "y", "true", "1" sebagai YES
+        var isYes = (v === "yes" || v === "y" || v === "true" || v === "1");
+        return (target === "yes") ? isYes : !isYes;
+    }
 
     function showToast(msg, type) {
         const ic = { success:"fa-check-circle", danger:"fa-exclamation-circle", info:"fa-info-circle" };
@@ -252,11 +300,16 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
     resetBtn.addEventListener("click", function() {
         if (!confirm("Apakah Anda yakin ingin mereset semua data?")) return;
         data1=[]; data2=[]; data3=[]; selectedIndexes.clear(); idxMapTab1.clear(); idxMapTab2.clear(); idxMapTab3.clear();
-        currentFilter1=""; currentFilter2=""; currentFilter3=""; filterTeknisiVal="";
+        currentFilter1=""; currentFilter2=""; currentFilter3=""; 
+        filterTeknisiVal=""; filterReturnVal=""; filterClaimVal="";
         tbody1.innerHTML=""; tbody2.innerHTML=""; tbody3.innerHTML="";
         totalQty1El.textContent="0"; totalQty2El.textContent="0"; totalQty3aEl.textContent="0";
-        fileInput.value=""; search1.value=""; search2.value=""; search3.value=""; filterTeknisi.value="";
-        filterTeknisi.innerHTML = '<option value="">Semua Teknisi Perbaikan</option>'; // Reset Dropdown
+        fileInput.value=""; search1.value=""; search2.value=""; search3.value=""; 
+        filterTeknisi.value=""; filterReturn.value=""; filterClaim.value="";
+        
+        // Reset Dropdowns
+        filterTeknisi.innerHTML = '<option value="">Semua Teknisi</option>';
+        
         checkAllCb.checked=false; checkAllCb.indeterminate=false;
         countBadge.textContent="0"; selectedBadge.textContent="0"; demandBadge.textContent="0";
         $$(".note-input").forEach(el => el.innerText="");
@@ -273,9 +326,11 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                 var parsed = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
                 if (!parsed.length) { showToast("File kosong atau format tidak dikenali.", "danger"); return; }
                 data1 = parsed; selectedIndexes.clear(); idxMapTab1.clear();
-                checkAllCb.checked=false; checkAllCb.indeterminate=false; currentFilter1=""; search1.value=""; filterTeknisiVal=""; filterTeknisi.value="";
+                checkAllCb.checked=false; checkAllCb.indeterminate=false; currentFilter1=""; search1.value=""; 
+                filterTeknisiVal=""; filterReturnVal=""; filterClaimVal="";
+                filterTeknisi.value=""; filterReturn.value=""; filterClaim.value="";
                 
-                // EKSTRAK NAMA TEKNISI UNIK UNTUK DIISIKAN KE DROPDOWN
+                // EKSTRAK NAMA TEKNISI UNIK
                 populateTeknisiDropdown(data1);
                 
                 renderTable1(); syncToTab2(); syncToTab3();
@@ -296,7 +351,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         }
         
         var sortedArr = Array.from(teknisiSet).sort();
-        filterTeknisi.innerHTML = '<option value="">Semua Teknisi Perbaikan</option>';
+        filterTeknisi.innerHTML = '<option value="">Semua Teknisi</option>';
         
         for (var j = 0; j < sortedArr.length; j++) {
             var opt = document.createElement("option");
@@ -317,12 +372,23 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         syncToTab2(); syncToTab3();
     });
 
-    // ========== PENCARIAN & FILTER TEKNISI (DEBOUNCE) ==========
+    // ========== PENCARIAN & FILTER (DEBOUNCE) ==========
     search1.addEventListener("input", debounce(function() { currentFilter1 = search1.value.toLowerCase(); renderTable1(); }, 300));
+    
+    // Event Listener untuk 3 Dropdown
     filterTeknisi.addEventListener("change", function() {
-        filterTeknisiVal = filterTeknisi.value.toLowerCase(); // Simpan value yang dipilih
+        filterTeknisiVal = filterTeknisi.value; 
         renderTable1();
     });
+    filterReturn.addEventListener("change", function() {
+        filterReturnVal = filterReturn.value;
+        renderTable1();
+    });
+    filterClaim.addEventListener("change", function() {
+        filterClaimVal = filterClaim.value;
+        renderTable1();
+    });
+
     search2.addEventListener("input", debounce(function() { currentFilter2 = search2.value.toLowerCase(); renderTable2(); }, 300));
     search3.addEventListener("input", debounce(function() { currentFilter3 = search3.value.toLowerCase(); renderTable3(); }, 300));
 
@@ -330,29 +396,60 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
     addRowBtn.addEventListener("click", function() { data2.push({ "No_Urut":data2.length+1, "Catatan":"", "Part":"", "Qty Transaksi":"", "Part Demand":"", "Serial Number":"", "Teknisi Perbaikan":"", _isNew:true }); renderTable2(); showToast("Baris baru ditambahkan.", "success"); });
     addRowBtn3.addEventListener("click", function() { data3.push({ "No_Urut":data3.length+1, "Part Demand / Part":"", "Lot":"", "Attribute":"", "QTY / Qty Transaksi":"", "QTY Konversi":"", "UM Konversi":"", "Remarks 1":"", "Remarks 2":"", "Nomor Service Job / Catatan":"", _isNew:true }); renderTable3(); showToast("Baris demand baru ditambahkan.", "success"); });
 
-    // ========== FILTER CEPAT (LOGIKA GANDA TEKNISI + TEKS) ==========
+    // ========== FILTER LOGIKA (UPDATED) ==========
     function getFilteredData1() {
-        var f = currentFilter1, ft = filterTeknisiVal, res = [];
+        var fText = currentFilter1, 
+            fTek = filterTeknisiVal, 
+            fRet = filterReturnVal, 
+            fClm = filterClaimVal;
+            
+        var res = [];
+        
         for(var i=0; i<data1.length; i++) {
-            if(!f && !ft) { res.push(Object.assign({}, data1[i], {_origIdx:i})); continue; }
-            var row=data1[i], mText=false, mTek=false;
+            var row = data1[i];
             
-            // Cek Filter Teks Umum
-            if(f) { for(var k in row) { if(String(row[k]).toLowerCase().indexOf(f)!==-1) { mText=true; break; } } }
-            
-            // Cek Filter Teknisi Spesifik
-            if(ft) { mTek = String(row["Teknisi Perbaikan"]).toLowerCase().trim() === ft; }
-            
-            // Gabungkan logika: (Teks cocok ATAU tidak ada filter teks) DAN (Teknisi cocok ATAU tidak ada filter teknisi)
-            if((mText || !f) && (mTek || !ft)) {
-                res.push(Object.assign({}, row, {_origIdx:i}));
+            // 1. Filter Teks Umum
+            var matchText = true;
+            if (fText) {
+                matchText = false;
+                for(var k in row) {
+                    if(k.charAt(0)==="_") continue;
+                    if(String(row[k]).toLowerCase().indexOf(fText)!==-1) { matchText=true; break; }
+                }
             }
-        } return res;
+            if(!matchText) continue; // Jika teks tidak cocok, skip
+
+            // 2. Filter Teknisi
+            var matchTek = true;
+            if (fTek) {
+                matchTek = (String(row["Teknisi Perbaikan"]).trim() === fTek);
+            }
+            if(!matchTek) continue;
+
+            // 3. Filter Return To Factory
+            var matchRet = true;
+            if (fRet) {
+                matchRet = checkYesNo(row["Return To Factory"], fRet);
+            }
+            if(!matchRet) continue;
+
+            // 4. Filter Claim To Factory
+            var matchClm = true;
+            if (fClm) {
+                matchClm = checkYesNo(row["Claim To Factory"], fClm);
+            }
+            if(!matchClm) continue;
+
+            // Jika semua lolos
+            res.push(Object.assign({}, row, {_origIdx:i}));
+        }
+        return res;
     }
+    
     function getFiltered(arr, f) { if(!f) return arr; return arr.filter(row => { for(var k in row) { if(k.charAt(0)==="_") continue; if(String(row[k]).toLowerCase().indexOf(f)!==-1) return true; } return false; }); }
     function updateCheckAllState() { var fil=getFilteredData1(), t=fil.length, c=0; fil.forEach(i => { if(selectedIndexes.has(i._origIdx)) c++; }); checkAllCb.checked = (t>0 && c===t); checkAllCb.indeterminate = (c>0 && c<t); }
 
-    // ========== RENDER TABEL 1 (OPTIMASI FRAGMENT) ==========
+    // ========== RENDER TABEL 1 ==========
     function renderTable1() {
         var frag = document.createDocumentFragment(), filtered = getFilteredData1(), total = 0;
         if (!filtered.length && !data1.length) { var tr=document.createElement("tr"); tr.innerHTML = '<td colspan="10"><div class="empty-state"><i class="fas fa-file-upload"></i><p>Belum ada data. Upload file Excel atau CSV untuk memulai.</p></div></td>'; frag.appendChild(tr); }
@@ -363,7 +460,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
 
     // Event Delegasi Tab 1
     tbody1.addEventListener("change", function(e) { if(e.target.type==="checkbox"){ var idx=parseInt(e.target.dataset.idx),tr=e.target.closest("tr"); if(e.target.checked){selectedIndexes.add(idx);tr.classList.add("selected-row");}else{selectedIndexes.delete(idx);tr.classList.remove("selected-row");} updateCheckAllState();syncToTab2();syncToTab3(); } });
-    tbody1.addEventListener("focusout", function(e) { if(e.target.hasAttribute("contenteditable")){ var idx=parseInt(e.target.dataset.idx),key=e.target.dataset.key; if(data1[idx]!==undefined){ data1[idx][key]=e.target.textContent; if(key==="Qty Transaksi"){totalQty1El.textContent=calcTotal(data1,"Qty Transaksi").toLocaleString("id-ID");if(selectedIndexes.has(idx)){syncToTab2();syncToTab3();}} if(key==="Catatan"&&selectedIndexes.has(idx)){syncToTab2();syncToTab3();} if(key==="Teknisi Perbaikan"){populateTeknisiDropdown(data1); if(selectedIndexes.has(idx)){syncToTab2();}} } } });
+    tbody1.addEventListener("focusout", function(e) { if(e.target.hasAttribute("contenteditable")){ var idx=parseInt(e.target.dataset.idx),key=e.target.dataset.key; if(data1[idx]!==undefined){ var oldVal = data1[idx][key]; data1[idx][key]=e.target.textContent; if(key==="Qty Transaksi"){totalQty1El.textContent=calcTotal(data1,"Qty Transaksi").toLocaleString("id-ID");if(selectedIndexes.has(idx)){syncToTab2();syncToTab3();}} if(key==="Catatan"&&selectedIndexes.has(idx)){syncToTab2();syncToTab3();} if(key==="Teknisi Perbaikan"){populateTeknisiDropdown(data1); if(selectedIndexes.has(idx)){syncToTab2();}} if(key==="Return To Factory"||key==="Claim To Factory"){ renderTable1(); /* Refresh filter view */ } } } });
 
     // ========== SINKRONISASI ==========
     function syncToTab2() { var fromTab1=[]; selectedIndexes.forEach(idx=>{if(data1[idx]){var r=Object.assign({},data1[idx],{_sourceIdx:idx,_isNew:false});r["No_Urut"]=fromTab1.length+1;fromTab1.push(r);}}); var manual=data2.filter(r=>r._isNew); data2=fromTab1.concat(manual); selectedBadge.textContent=data2.length; rebuildIdxMap(data2,idxMapTab2); renderTable2(); }

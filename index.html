@@ -453,7 +453,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                 <button class="btn-info" id="jpegBtn5" aria-label="Unduh sebagai JPEG HD"><i class="fas fa-image"></i> Download JPEG (HD)</button>
                 <span class="btn-group-info"><span class="badge" id="stockCountBadge5">0</span> baris tagihan</span>
             </div>
-            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;"><i class="fas fa-info-circle"></i> Data diambil dari Tab 1 (Data Terpilih). Selain kolom aksi, tabel ini bersifat <strong>Read Only</strong>.</p>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;"><i class="fas fa-info-circle"></i> Data diambil dari Tab 1 (Data Terpilih). Kolom "Disetujui Pada" tidak akan di-export.</p>
             <label for="search5" class="sr-only">Cari data di tabel tagihan return</label>
             <input type="text" id="search5" placeholder="Cari data tagihan return...">
             <div class="table-container">
@@ -755,13 +755,11 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                 
                 if(row._isNew) tr.className="new-row"; 
                 
-                // Kolom No Urut
                 var tdN=document.createElement("td"); 
                 tdN.className="no-urut"; 
                 tdN.textContent=fi+1; 
                 tr.appendChild(tdN); 
                 
-                // Loop Kolom Lainnya
                 for(var ki=1; ki<KEYS_TAB5.length; ki++){ 
                     var key=KEYS_TAB5[ki];
                     var td=document.createElement("td"); 
@@ -776,7 +774,6 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                     tr.appendChild(td); 
                 } 
                 
-                // KOLOM AKSI HAPUS
                 var tdA=document.createElement("td"); 
                 tdA.className="col-action"; 
                 var btn=document.createElement("button"); 
@@ -803,17 +800,15 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
     tbody4.addEventListener("focusout", function(e) { if(e.target.hasAttribute("contenteditable")){ var ri=parseInt(e.target.dataset.ridx4), k=e.target.dataset.key; if(data4[ri]!==undefined){ data4[ri][k]=e.target.textContent; if(k==="Qty Reservasi") totalQty4El.textContent=calcTotal(data4,"Qty Reservasi").toLocaleString("id-ID"); } } });
     tbody4.addEventListener("click", function(e) { if(e.target.closest(".btn-danger")){ var ri=parseInt(e.target.closest(".btn-danger").dataset.ridx4); var row=data4[ri]; if(row && row._sourceIdx !== undefined){ selectedIndexes.delete(row._sourceIdx); updateCheckAllState(); renderTable1(); syncToTab2(); syncToTab3(); syncToTab5(); } data4.splice(ri,1); stockBadge.textContent=data4.length; renderTable4(); showToast("Baris surat jalan berhasil dihapus.","danger"); } });
 
-    // Event Delegasi Tab 5 (AKSI HAPUS)
+    // Event Delegasi Tab 5
     tbody5.addEventListener("click", function(e) { 
         if(e.target.closest(".btn-danger")){ 
             var ri=parseInt(e.target.closest(".btn-danger").dataset.ridx5); 
             var row=data5[ri]; 
-            // Hapus centang di Tab 1 jika baris ini berasal dari sana
             if(row && row._sourceIdx !== undefined){ 
                 selectedIndexes.delete(row._sourceIdx); 
                 updateCheckAllState(); 
                 renderTable1(); 
-                // Sinkronkan ulang tab lain agar tetap konsisten
                 syncToTab2(); 
                 syncToTab3(); 
                 syncToTab4(); 
@@ -918,7 +913,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         showToast("File PDF berhasil diunduh.","success"); 
     });
 
-    // Tab 5 (TAGIHAN RETURN) - Export Excel
+    // Tab 5 (TAGIHAN RETURN) - Export Excel (DIHAPUS KOLOM DISETUJUI PADA)
     $("#excelBtn5").addEventListener("click", function() { 
         if(!data5.length){showToast("Tidak ada data.","danger");return;} 
         var wb = XLSX.utils.book_new();
@@ -928,11 +923,14 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         wsData.push([]);
         wsData.push(["Tanggal: " + new Date().toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric"})]); 
         wsData.push([]);
-        wsData.push(["No", "Catatan", "Part", "Qty Reservasi", "Part Demand", "Serial Number", "Teknisi Perbaikan", "Disetujui Pada", "Lamanya Hari"]);
+        
+        // HEADER TABEL DIPOTONG: DISETUJUI PADA DIHAPUS
+        wsData.push(["No", "Catatan", "Part", "Qty Reservasi", "Part Demand", "Serial Number", "Teknisi Perbaikan", "Lamanya Hari"]);
         
         var gt=calcTotal(data5,"Qty Reservasi"); 
         for(var i=0;i<data5.length;i++){
             var r=data5[i]; 
+            // DATA DIPOTONG: DISETUJUI PADA DIHAPUS
             wsData.push([
                 i+1, 
                 r["Catatan"]||"", 
@@ -940,26 +938,28 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                 r["Qty Reservasi"]||"", 
                 r["Part Demand"]||"", 
                 r["Serial Number"]||"", 
-                r["Teknisi Perbaikan"]||"", 
-                r["Disetujui Pada"]||"",
+                r["Teknisi Perbaikan"]||"",
                 r["Lamanya Hari"]||""
             ]); 
         }
-        wsData.push(["", "", "TOTAL QTY", gt, "", "", "", "", ""]); 
+        // TOTAL DIPOTONG SESUAI HEADER BARU
+        wsData.push(["", "", "TOTAL QTY", gt, "", "", "", ""]); 
         
         var ws = XLSX.utils.aoa_to_sheet(wsData);
-        ws["!cols"]=[{wch:6},{wch:30},{wch:30},{wch:14},{wch:14},{wch:25},{wch:25},{wch:18},{wch:15}];
+        ws["!cols"]=[{wch:6},{wch:30},{wch:30},{wch:14},{wch:14},{wch:25},{wch:25},{wch:15}];
         
         XLSX.utils.book_append_sheet(wb,ws,"Tagihan Part Return");
         XLSX.writeFile(wb,"Tagihan Part Return.xlsx");
         showToast("File Excel berhasil diunduh.","success"); 
     });
 
-    // Tab 5 (TAGIHAN RETURN) - Export PDF
+    // Tab 5 (TAGIHAN RETURN) - Export PDF (DIHAPUS KOLOM DISETUJUI PADA)
     $("#pdfBtn5").addEventListener("click", function() { 
         if(!data5.length){showToast("Tidak ada data.","danger");return;} 
         var doc=new jsPDF({orientation:"l", unit:"mm", format:"a4"}), pw=doc.internal.pageSize.getWidth(), mg={left:12, right:12}; 
-        var col=["No","Catatan","Part","Qty","Demand","Serial","Teknisi","Disetujui","Lama Hari"], rows=[]; 
+        
+        // HEADER PDF DIPOTONG: DISETUJUI PADA DIHAPUS
+        var col=["No","Catatan","Part","Qty","Demand","Serial","Teknisi","Lama Hari"], rows=[]; 
         
         doc.setFontSize(18); doc.setTextColor(30,41,59); doc.setFont(undefined,"bold"); doc.text("Tagihan Sparepart Bekas Return", pw/2, 20, {align: "center"});
         
@@ -970,6 +970,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         
         for(var i=0;i<data5.length;i++){
             var r=data5[i]; 
+            // DATA PDF DIPOTONG: DISETUJUI PADA DIHAPUS
             rows.push([
                 String(i+1),
                 String(r["Catatan"]||""),
@@ -978,7 +979,6 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
                 String(r["Part Demand"]||""),
                 String(r["Serial Number"]||""),
                 String(r["Teknisi Perbaikan"]||""),
-                String(r["Disetujui Pada"]||""),
                 String(r["Lamanya Hari"]||"")
             ]);
         } 
@@ -989,7 +989,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
             margin:mg, 
             styles:{font:"helvetica",fontStyle:"normal",fontSize:7,lineColor:[226,232,240],lineWidth:0.3,textColor:[51,65,85],cellPadding:2,overflow:"linebreak"}, 
             headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold",fontSize:8,lineColor:[200,200,200],halign:"center",valign:"middle"}, 
-            columnStyles:{0:{halign:"center",cellWidth:8},3:{halign:"center",cellWidth:10},7:{halign:"center",cellWidth:18},8:{halign:"center",cellWidth:15}}, 
+            columnStyles:{0:{halign:"center",cellWidth:8},3:{halign:"center",cellWidth:10},7:{halign:"center",cellWidth:15}}, 
             theme:"grid"
         }); 
         
@@ -1003,7 +1003,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         showToast("File PDF berhasil diunduh.","success"); 
     });
 
-    // --- FITUR BARU: TAB 5 JPEG HD ---
+    // --- FITUR JPEG HD TAB 5 (DIHAPUS KOLOM DISETUJUI PADA) ---
     $("#jpegBtn5").addEventListener("click", function() {
         if(!data5.length){showToast("Tidak ada data untuk di-export.","danger");return;}
         
@@ -1031,7 +1031,8 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         table.style.width = '100%';
         table.style.borderCollapse = 'collapse';
         
-        var thead = ['No','Catatan','Part','Qty','Demand','Serial','Teknisi','Disetujui','Lama Hari'];
+        // HEADER JPEG DIPOTONG: DISETUJUI PADA DIHAPUS
+        var thead = ['No','Catatan','Part','Qty','Demand','Serial','Teknisi','Lama Hari'];
         var htmlHeader = '<thead><tr>';
         thead.forEach(h => {
             htmlHeader += `<th style="background-color:#f8fafc; color:#1e293b; font-weight:700; font-size:16px; padding:12px; border:1px solid #e2e8f0; text-align:center; text-transform:uppercase;">${h}</th>`;
@@ -1049,7 +1050,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
             htmlBody += `<td style="padding:10px; border:1px solid #e2e8f0; font-size:15px;">${r["Part Demand"]||""}</td>`;
             htmlBody += `<td style="padding:10px; border:1px solid #e2e8f0; font-size:15px;">${r["Serial Number"]||""}</td>`;
             htmlBody += `<td style="padding:10px; border:1px solid #e2e8f0; font-size:15px;">${r["Teknisi Perbaikan"]||""}</td>`;
-            htmlBody += `<td style="padding:10px; border:1px solid #e2e8f0; font-size:15px;">${r["Disetujui Pada"]||""}</td>`;
+            // KOLOM DISETUJUI PADA DILANJUTKAN KE SINI DIHAPUS
             htmlBody += `<td style="text-align:center; padding:10px; border:1px solid #e2e8f0; font-size:15px; background:#f8fafc; font-weight:600;">${r["Lamanya Hari"]||""}</td>`;
             htmlBody += '</tr>';
         }
@@ -1059,7 +1060,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         htmlBody += `<tfoot><tr>
             <td colspan="3" style="text-align:right; padding:12px; font-weight:bold; font-size:16px; border:1px solid #e2e8f0;">TOTAL QTY</td>
             <td style="text-align:center; padding:12px; font-weight:800; font-size:18px; color:#10b981; border:1px solid #e2e8f0; background:#ecfdf5;">${gt}</td>
-            <td colspan="5" style="border:1px solid #e2e8f0;"></td>
+            <td colspan="4" style="border:1px solid #e2e8f0;"></td>
         </tr></tfoot>`;
 
         table.innerHTML = htmlHeader + htmlBody;

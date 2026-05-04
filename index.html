@@ -919,7 +919,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         var wb = XLSX.utils.book_new();
         var wsData = [];
         
-        wsData.push(["Tagihan Sparepart Bekas Return"]); 
+        wsData.push(["Tagihan SOB OPEN Sparepart Bekas"]); 
         wsData.push([]);
         wsData.push(["Tanggal: " + new Date().toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric"})]); 
         wsData.push([]);
@@ -961,7 +961,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         // HEADER PDF DIPOTONG: DISETUJUI PADA DIHAPUS
         var col=["No","Catatan","Part","Qty","Demand","Serial","Teknisi","Lama Hari"], rows=[]; 
         
-        doc.setFontSize(18); doc.setTextColor(30,41,59); doc.setFont(undefined,"bold"); doc.text("Tagihan Sparepart Bekas Return", pw/2, 20, {align: "center"});
+        doc.setFontSize(18); doc.setTextColor(30,41,59); doc.setFont(undefined,"bold"); doc.text("Tagihan SOB OPEN Sparepart Bekas", pw/2, 20, {align: "center"});
         
         doc.setFontSize(10); doc.setTextColor(100,116,139); doc.setFont(undefined,"normal");
         doc.text("Tanggal: " + new Date().toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric"}), pw - mg.right, 20, {align: "right"});
@@ -1021,7 +1021,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         var header = document.createElement('div');
         header.style.marginBottom = '30px';
         header.innerHTML = `
-            <h2 style="margin:0; font-size:32px; color:#1e293b; text-align:center; font-weight:800;">Tagihan Sparepart Bekas Return</h2>
+            <h2 style="margin:0; font-size:32px; color:#1e293b; text-align:center; font-weight:800;">Tagihan SOB OPEN Sparepart Bekas</h2>
             <p style="margin:10px 0 0 0; font-size:16px; color:#64748b; text-align:right;">Tanggal: ${new Date().toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric"})}</p>
             <hr style="border:0; border-top:2px solid #e2e8f0; margin-top:15px;">
         `;

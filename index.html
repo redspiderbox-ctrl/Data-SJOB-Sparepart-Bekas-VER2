@@ -948,8 +948,8 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         var ws = XLSX.utils.aoa_to_sheet(wsData);
         ws["!cols"]=[{wch:6},{wch:30},{wch:30},{wch:14},{wch:14},{wch:25},{wch:25},{wch:15}];
         
-        XLSX.utils.book_append_sheet(wb,ws,"Tagihan Part Return");
-        XLSX.writeFile(wb,"Tagihan Part Return.xlsx");
+        XLSX.utils.book_append_sheet(wb,ws,"Tagihan SOB OPEN Sparepart Bekas");
+        XLSX.writeFile(wb,"Tagihan SOB OPEN Sparepart Bekas.xlsx");
         showToast("File Excel berhasil diunduh.","success"); 
     });
 
@@ -999,7 +999,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         doc.text("TOTAL QTY:", totX, fy+7, {align:"left"}); 
         doc.setTextColor(5,150,105); doc.text(String(gt), totX + 25, fy+7, {align:"left"}); 
         
-        doc.save("Tagihan Part Return.pdf"); 
+        doc.save("Tagihan SOB OPEN Sparepart Bekas.pdf"); 
         showToast("File PDF berhasil diunduh.","success"); 
     });
 
@@ -1074,7 +1074,7 @@ tfoot td { padding: 12px; border-bottom: none; border-top: 2px solid var(--borde
         }).then(function(canvas) {
             document.body.removeChild(container);
             var link = document.createElement('a');
-            link.download = 'Tagihan Part Return HD.jpeg';
+            link.download = 'Tagihan SOB OPEN Sparepart Bekas HD.jpeg';
             link.href = canvas.toDataURL('image/jpeg', 0.95); 
             link.click();
             showToast("File JPEG HD berhasil diunduh.", "success");
